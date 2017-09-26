@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include"GameFramework/Actor.h"
 #include"Engine/TriggerVolume.h"
 #include "OpenDoor.generated.h"
-
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ESCAPE_BUILDING_API UOpenDoor : public UActorComponent
@@ -16,7 +16,8 @@ class ESCAPE_BUILDING_API UOpenDoor : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UOpenDoor();
-
+	void OpenDoor();
+	void CloseDoor();
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -26,7 +27,9 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 private:
 	UPROPERTY(VisibleAnywhere)
-		float Openby = 60.f;
+		float Openby = 90.f;
 	UPROPERTY(EditAnywhere)
 		ATriggerVolume* PressurePlate;
+	UPROPERTY(VisibleAnywhere)
+		AActor* DoorOpener;
 };
