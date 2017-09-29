@@ -33,6 +33,7 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 	DoorOpener = GetWorld()->GetFirstPlayerController()->GetPawn();
+
 }
 
 
@@ -41,9 +42,14 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if (PressurePlate->IsOverlappingActor(DoorOpener))
+	{
 		OpenDoor();
+		Dooropentime = GetWorld()->TimeSeconds;
+	}
 	else
-		CloseDoor();
-	
+	{
+		if (GetWorld()->TimeSince(Dooropentime) > Doorclosetime)
+			CloseDoor();
+	}
 }
 
