@@ -3,6 +3,7 @@
 #include "Grabber.h"
 #include"Engine/World.h"
 #include"GameFramework/Actor.h"
+#include"Runtime/Engine/Public/DrawDebugHelpers.h"
 
 #define OUT				//OUT does absolutely nothing here as Ben pointed out.The only thing it's here for is reminding us about the variables called by reference
 
@@ -22,7 +23,6 @@ void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	UE_LOG(LogTemp, Warning,TEXT("ITS ON LIKE THE FOURTH OF JULY ON"));
 	
 }
 
@@ -36,5 +36,8 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	// ...
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT POV,OUT POVR);		//OUT here just shows that POV and POVR ae going to be changed ffrom within the function
 	UE_LOG(LogTemp, Warning, TEXT("Stupid Pawn looking at:%s from %s"), *POVR.ToString(), *POV.ToString());
+	FVector PlayerGrabReach = POVR.Vector()*Reach;
+	FVector LineViewEnd = POV + PlayerGrabReach;
+	DrawDebugLine(GetWorld(), POV, LineViewEnd, FColor(200.f, 100.f, 50.f), false, 0.f, 0.f, 20.f);
 }
 
