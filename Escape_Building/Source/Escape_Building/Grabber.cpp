@@ -3,6 +3,7 @@
 #include "Grabber.h"
 #include"Engine/World.h"
 #include"GameFramework/Actor.h"
+
 #include"Runtime/Engine/Public/DrawDebugHelpers.h"
 
 #define OUT				//OUT does absolutely nothing here as Ben pointed out.The only thing it's here for is reminding us about the variables called by reference
@@ -33,11 +34,15 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	FVector POV;
 	FRotator POVR;
-	// ...
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT POV,OUT POVR);		//OUT here just shows that POV and POVR ae going to be changed ffrom within the function
-	UE_LOG(LogTemp, Warning, TEXT("Stupid Pawn looking at:%s from %s"), *POVR.ToString(), *POV.ToString());
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT POV, OUT POVR);
 	FVector PlayerGrabReach = POVR.Vector()*Reach;
 	FVector LineViewEnd = POV + PlayerGrabReach;
-	DrawDebugLine(GetWorld(), POV, LineViewEnd, FColor(200.f, 100.f, 50.f), false, 0.f, 0.f, 20.f);
+	DrawDebugLine(GetWorld(), POV, LineViewEnd, FColor(180, 180, 180), false, 0.f, .5f, 10.f);
+	FHitResult Hit;
+	GetWorld()->LineTraceSingleByObjectType(Hit, POV, LineViewEnd, FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody), FCollisionQueryParams(FName(TEXT("")), false, GetOwner()));
+	if (Hit.GetActor())
+	{
+		UE_LOG(LogTemp,Warning,TEXT("HIT ACTOR: %s "),*(Hit.Actor->GetName()))
+	}
 }
 
