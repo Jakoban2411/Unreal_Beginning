@@ -4,15 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include"PhysicsEngine/PhysicsHandleComponent.h"
 #include "Grabber.generated.h"
 
-
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class ESCAPE_BUILDING_API UGrabber : public UActorComponent
 {
 	GENERATED_BODY()
 private:
-	float Reach = 100.f;
+	float Reach = 100.f; 
+	UPhysicsHandleComponent* PhysicsHandle = nullptr;
 public:	
 	// Sets default values for this component's properties
 	UGrabber();

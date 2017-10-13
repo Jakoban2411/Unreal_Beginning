@@ -3,9 +3,7 @@
 #include "Grabber.h"
 #include"Engine/World.h"
 #include"GameFramework/Actor.h"
-
 #include"Runtime/Engine/Public/DrawDebugHelpers.h"
-
 #define OUT				//OUT does absolutely nothing here as Ben pointed out.The only thing it's here for is reminding us about the variables called by reference
 
 // Sets default values for this component's properties
@@ -23,8 +21,11 @@ UGrabber::UGrabber()
 void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if (!PhysicsHandle)
+	{
+		UE_LOG(LogTemp,Error,TEXT("%s is missing a physics handle component!"),*(GetOwner()->GetName()))
+	}
 }
 
 
@@ -39,7 +40,8 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	FVector LineViewEnd = POV + PlayerGrabReach;
 	DrawDebugLine(GetWorld(), POV, LineViewEnd, FColor(180, 180, 180), false, 0.f, .5f, 10.f);
 	FHitResult Hit;
-	GetWorld()->LineTraceSingleByObjectType(Hit, POV, LineViewEnd, FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody), FCollisionQueryParams(FName(TEXT("")), false, GetOwner()));
+	FCollisionQueryParams Pawn(FName(TEXT("")), false, GetOwner());
+	GetWorld()->LineTraceSingleByObjectType(Hit, POV, LineViewEnd, FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),Pawn);
 	if (Hit.GetActor())
 	{
 		UE_LOG(LogTemp,Warning,TEXT("HIT ACTOR: %s "),*(Hit.Actor->GetName()))
