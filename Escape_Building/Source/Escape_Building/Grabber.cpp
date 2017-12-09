@@ -4,9 +4,9 @@
 #include"Engine/World.h"
 #include"GameFramework/Actor.h"
 #define OUT				//OUT does absolutely nothing here as Ben pointed out.The only thing it's here for is reminding us about the variables called by reference
-FVector POV;
-FRotator POVR;
-FVector LineViewEnd;
+FVector POV;			//Location of the Pawn	 
+FRotator POVR;			//Direction of the Pawn
+FVector LineViewEnd;	//Decides the grab end of the Pawn 
 
 // Sets default values for this component's properties
 UGrabber::UGrabber()
@@ -18,34 +18,6 @@ UGrabber::UGrabber()
 	Pinput = nullptr;
 }
 
-void UGrabber::Grab()
-{	
-	FHitResult Hit = RayCast();
-	auto GrabComponent = Hit.GetComponent();
-	if (Hit.GetActor())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("HIT ACTOR: %s "), *(Hit.GetActor()->GetName()))
-			PhysicsHandle->GrabComponentAtLocationWithRotation(GrabComponent, EName::NAME_None, Hit.GetActor()->GetActorLocation(),FRotator(0));
-	}
-
-}
-FHitResult UGrabber::RayCast() const
-{	
-
-	UE_LOG(LogTemp, Warning, TEXT("YES! YOU ARE GRABBING SOMETHING!Jerking off maybe?:P"))
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT POV, OUT POVR);
-	FVector PlayerGrabReach = POVR.Vector()*Reach;
-	LineViewEnd = POV + PlayerGrabReach;
-	FHitResult Hit;
-	FCollisionQueryParams Pawn(FName(TEXT("")), false, GetOwner());
-	GetWorld()->LineTraceSingleByObjectType(Hit, POV, LineViewEnd, FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody), Pawn);
-	return Hit;
-}
-void UGrabber::Release()
-{
-	UE_LOG(LogTemp, Warning, TEXT("KEY RELEASED!"));
-	PhysicsHandle->ReleaseComponent();
-}
 // Called when the game starts
 void UGrabber::BeginPlay()
 {
@@ -53,6 +25,8 @@ void UGrabber::BeginPlay()
 	PhysicsComponentHandle();
 	InputComponentHandle();
 }
+
+
 void UGrabber::PhysicsComponentHandle()
 {
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();		//Look for attached Physics handler in Runtime
@@ -77,13 +51,45 @@ void UGrabber::InputComponentHandle()
 	}
 }
 
-// Called every frame
-void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UGrabber::Grab()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	FHitResult Hit = RayCast();						//Hit is set to the object if hit
+	auto GrabComponent = Hit.GetComponent();
+	if (Hit.GetActor())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HIT ACTOR: %s "), *(Hit.GetActor()->GetName()))
+			PhysicsHandle->GrabComponentAtLocationWithRotation(GrabComponent, EName::NAME_None, Hit.GetActor()->GetActorLocation(), FRotator(0));		//Component to be grabbed is picked up
+	}
+
+}
+FHitResult UGrabber::RayCast() const
+{
+
+	FHitResult Hit;
+	FCollisionQueryParams Pawn(FName(TEXT("")), false, GetOwner());			//Creates a Trace Channel For Pawn i.e GetOwner
+	GetWorld()->LineTraceSingleByObjectType(OUT Hit, POV, LineViewEnd, FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody), Pawn);		//Raycast 
+	return Hit;
+}
+void UGrabber::Release()
+{
+	UE_LOG(LogTemp, Warning, TEXT("KEY RELEASED!"));
+	PhysicsHandle->ReleaseComponent();					
+}
+
+
+void UGrabber::POVSet()
+{
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT POV, OUT POVR);
 	FVector PlayerGrabReach = POVR.Vector()*Reach;
 	LineViewEnd = POV + PlayerGrabReach;
+}
+
+// Called every frame
+void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{	
+
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	POVSet();
 	if (PhysicsHandle->GrabbedComponent)
 	{
 		PhysicsHandle->SetTargetLocation(LineViewEnd);

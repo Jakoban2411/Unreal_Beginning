@@ -18,6 +18,7 @@ public:
 	UOpenDoor();
 	void OpenDoor();
 	void CloseDoor();
+	float GetTotalMass();
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -30,8 +31,8 @@ private:
 		float Openby = 90.f;
 	UPROPERTY(EditAnywhere)
 		ATriggerVolume* PressurePlate;
-	UPROPERTY(VisibleAnywhere)
-		AActor* DoorOpener;
+	UPROPERTY(EditAnywhere)
+		float Masstrigger=70.f;
 	float Dooropentime;
 	UPROPERTY(EditAnywhere)
 		float Doorclosetime = 1.f;
