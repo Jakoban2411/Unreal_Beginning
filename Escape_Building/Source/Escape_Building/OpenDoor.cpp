@@ -33,6 +33,10 @@ float UOpenDoor::GetTotalMass()
 	float Tmass = 0.f;
 	//Array of Objects that are going to trigger the pressure plate
 	TArray<AActor*> TrigObjs;
+	if (!PressurePlate) { UE_LOG(LogTemp, Error, TEXT("Pressure Plate NOT FOUND FOR %s"), *GetOwner()->GetName());
+	return Tmass;
+	}
+
 	PressurePlate->GetOverlappingActors(OUT TrigObjs);
 	for (const auto* Obj : TrigObjs)
 	{

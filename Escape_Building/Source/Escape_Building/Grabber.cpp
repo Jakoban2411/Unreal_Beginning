@@ -29,15 +29,18 @@ void UGrabber::BeginPlay()
 
 void UGrabber::PhysicsComponentHandle()
 {
-	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();		//Look for attached Physics handler in Runtime
 	if (!PhysicsHandle)
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s is missing a physics handle component!"), *(GetOwner()->GetName()))
+			return;
 	}
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();		//Look for attached Physics handler in Runtime
+	
 
 }
 void UGrabber::InputComponentHandle()
 {
+
 	Pinput = GetOwner()->FindComponentByClass<UInputComponent>();						//Look for Input component generated in Runtime
 	if (Pinput)
 	{
@@ -48,6 +51,7 @@ void UGrabber::InputComponentHandle()
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("NO INPUT COMPONENT FOUND *Insert sad smiley face*"))
+			return;
 	}
 }
 
@@ -58,6 +62,9 @@ void UGrabber::Grab()
 	if (Hit.GetActor())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("HIT ACTOR: %s "), *(Hit.GetActor()->GetName()))
+			if (!PhysicsHandle) { UE_LOG(LogTemp, Error, TEXT("PHYSICS HANDLE NOT FOUND FOR %s"), *GetOwner()->GetName());
+		return;
+		}
 			PhysicsHandle->GrabComponentAtLocationWithRotation(GrabComponent, EName::NAME_None, Hit.GetActor()->GetActorLocation(), FRotator(0));		//Component to be grabbed is picked up
 	}
 
@@ -73,6 +80,9 @@ FHitResult UGrabber::RayCast() const
 void UGrabber::Release()
 {
 	UE_LOG(LogTemp, Warning, TEXT("KEY RELEASED!"));
+	if (!PhysicsHandle) { UE_LOG(LogTemp, Error, TEXT("PHYSICS HANDLE NOT FOUND FOR %s"), *GetOwner()->GetName());
+	return;
+	}
 	PhysicsHandle->ReleaseComponent();					
 }
 
@@ -90,6 +100,9 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	POVSet();
+	if (!PhysicsHandle) { UE_LOG(LogTemp, Error, TEXT("PHYSICS HANDLE NOT FOUND FOR %s"), *GetOwner()->GetName());
+	return;
+	}
 	if (PhysicsHandle->GrabbedComponent)
 	{
 		PhysicsHandle->SetTargetLocation(LineViewEnd);
