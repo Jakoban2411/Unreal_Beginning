@@ -8,6 +8,7 @@
 #include"Engine/TriggerVolume.h"
 #include "OpenDoor.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOpenRequest);
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ESCAPE_BUILDING_API UOpenDoor : public UActorComponent
 {
@@ -19,6 +20,8 @@ public:
 	void OpenDoor();
 	void CloseDoor();
 	float GetTotalMass();
+	UPROPERTY(BlueprintAssignable)
+		FOpenRequest OpenDoorRequest;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

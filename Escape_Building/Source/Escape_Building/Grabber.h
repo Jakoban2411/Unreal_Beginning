@@ -15,7 +15,7 @@ class ESCAPE_BUILDING_API UGrabber : public UActorComponent
 private:
 	float Reach = 200.f;							//Defines Value for the hand length ie the maximum length Pawn can reach upto
 	UPhysicsHandleComponent* PhysicsHandle=nullptr;			//Is set to the Physics Handle of the Pawn once Game starts
-	UInputComponent* Pinput;						//Input Component of the pawn once the game starts
+	UInputComponent* Pinput=nullptr;						//Input Component of the pawn once the game starts
 	
 public:	
 	// Sets default values for this component's properties

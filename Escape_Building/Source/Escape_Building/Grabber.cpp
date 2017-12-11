@@ -29,14 +29,12 @@ void UGrabber::BeginPlay()
 
 void UGrabber::PhysicsComponentHandle()
 {
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();		//Look for attached Physics handler in Runtime
 	if (!PhysicsHandle)
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s is missing a physics handle component!"), *(GetOwner()->GetName()))
 			return;
 	}
-	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();		//Look for attached Physics handler in Runtime
-	
-
 }
 void UGrabber::InputComponentHandle()
 {
