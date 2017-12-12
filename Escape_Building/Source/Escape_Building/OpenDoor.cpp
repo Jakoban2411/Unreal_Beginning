@@ -15,17 +15,6 @@ UOpenDoor::UOpenDoor()
 	// ...
 }
 
-
-void UOpenDoor::OpenDoor()
-{
-	OpenDoorRequest.Broadcast();
-}
-
-void UOpenDoor::CloseDoor()
-{
-	GetOwner()->SetActorRotation(FRotator(0.f,90.f,0.f));
-}
-
 float UOpenDoor::GetTotalMass()
 {	
 	float Tmass = 0.f;
@@ -48,24 +37,18 @@ float UOpenDoor::GetTotalMass()
 void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
-	
-
 }
-
-
 // Called every frame
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if (GetTotalMass()>Masstrigger)
 	{
-		OpenDoor();
-		Dooropentime = GetWorld()->TimeSeconds;
+		OpenDoorRequest.Broadcast();
 	}
 	else
 	{
-		if (GetWorld()->TimeSince(Dooropentime) > Doorclosetime)
-			CloseDoor();
+		CloseDoorRequest.Broadcast();
 	}
 }
 

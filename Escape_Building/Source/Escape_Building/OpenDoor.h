@@ -9,6 +9,7 @@
 #include "OpenDoor.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOpenRequest);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCloseRequest);
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ESCAPE_BUILDING_API UOpenDoor : public UActorComponent
 {
@@ -17,11 +18,12 @@ class ESCAPE_BUILDING_API UOpenDoor : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UOpenDoor();
-	void OpenDoor();
-	void CloseDoor();
 	float GetTotalMass();
 	UPROPERTY(BlueprintAssignable)
 		FOpenRequest OpenDoorRequest;
+	UPROPERTY(BlueprintAssignable)
+		FCloseRequest CloseDoorRequest;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -31,12 +33,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 private:
 	UPROPERTY(EditAnywhere)
-		float Openby = 90.f;
-	UPROPERTY(EditAnywhere)
 		ATriggerVolume* PressurePlate=nullptr;
 	UPROPERTY(EditAnywhere)
 		float Masstrigger=70.f;
-	float Dooropentime;
-	UPROPERTY(EditAnywhere)
-		float Doorclosetime = 1.f;
+	
 };
