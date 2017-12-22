@@ -8,11 +8,13 @@
 #include"Components/InputComponent.h"
 #include "Grabber.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FThrowRequest);
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class ESCAPE_BUILDING_API UGrabber : public UActorComponent
 {
 	GENERATED_BODY()
 private:
+	
 	float Reach = 200.f;							//Defines Value for the hand length ie the maximum length Pawn can reach upto
 	UPhysicsHandleComponent* PhysicsHandle=nullptr;			//Is set to the Physics Handle of the Pawn once Game starts
 	UInputComponent* Pinput=nullptr;						//Input Component of the pawn once the game starts
@@ -34,4 +36,10 @@ public:
 	void POVSet();						//Sets the POV And POVR
 	FHitResult RayCast() const;			//returns the Actor Hit
 	void Release();						//Checks release of the key 
+	void Throw();		
+	void TRelease();						//Checks release of the key 
+	UPROPERTY(BlueprintAssignable)
+	FThrowRequest TReq;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Variable")
+	UPrimitiveComponent* GrabbedComponent;
 };

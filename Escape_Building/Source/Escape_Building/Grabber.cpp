@@ -43,8 +43,10 @@ void UGrabber::InputComponentHandle()
 	if (Pinput)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Input Component Found"))
-			Pinput->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
+		Pinput->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
 		Pinput->BindAction("Grab", IE_Released, this, &UGrabber::Release);
+		Pinput->BindAction("Throw", IE_Pressed, this, &UGrabber::Throw);
+		Pinput->BindAction("Throw", IE_Released, this, &UGrabber::TRelease);
 	}
 	else
 	{
@@ -53,20 +55,6 @@ void UGrabber::InputComponentHandle()
 	}
 }
 
-void UGrabber::Grab()
-{
-	FHitResult Hit = RayCast();						//Hit is set to the object if hit
-	auto GrabComponent = Hit.GetComponent();
-	if (Hit.GetActor())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("HIT ACTOR: %s "), *(Hit.GetActor()->GetName()))
-			if (!PhysicsHandle) { UE_LOG(LogTemp, Error, TEXT("PHYSICS HANDLE NOT FOUND FOR %s"), *GetOwner()->GetName());
-		return;
-		}
-			PhysicsHandle->GrabComponentAtLocationWithRotation(GrabComponent, EName::NAME_None, Hit.GetActor()->GetActorLocation(), FRotator(0));		//Component to be grabbed is picked up
-	}
-
-}
 FHitResult UGrabber::RayCast() const
 {
 
@@ -75,13 +63,60 @@ FHitResult UGrabber::RayCast() const
 	GetWorld()->LineTraceSingleByObjectType(OUT Hit, POV, LineViewEnd, FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody), Pawn);		//Raycast 
 	return Hit;
 }
+void UGrabber::Grab()
+{
+	FHitResult Hit = RayCast();						//Hit is set to the object if hit
+	GrabbedComponent = Hit.GetComponent();
+	if (Hit.GetActor())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HIT ACTOR: %s "), *(Hit.GetActor()->GetName()))
+		if (!PhysicsHandle) 
+		{ 
+		UE_LOG(LogTemp, Error, TEXT("PHYSICS HANDLE NOT FOUND FOR %s"), *GetOwner()->GetName());
+		return;
+		}
+		PhysicsHandle->GrabComponentAtLocationWithRotation(GrabbedComponent, EName::NAME_None, Hit.GetActor()->GetActorLocation(), FRotator(0));		//Component to be grabbed is picked up
+	}
+
+}
+
 void UGrabber::Release()
 {
 	UE_LOG(LogTemp, Warning, TEXT("KEY RELEASED!"));
-	if (!PhysicsHandle) { UE_LOG(LogTemp, Error, TEXT("PHYSICS HANDLE NOT FOUND FOR %s"), *GetOwner()->GetName());
-	return;
+	if (!PhysicsHandle) 
+	{
+		UE_LOG(LogTemp, Error, TEXT("PHYSICS HANDLE NOT FOUND FOR %s"), *GetOwner()->GetName());
+		return;
 	}
 	PhysicsHandle->ReleaseComponent();					
+}
+
+void UGrabber::Throw()
+{
+	FHitResult Hit = RayCast();
+	if (Hit.GetActor())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("GOT IT?"));
+		PhysicsHandle->GrabComponentAtLocationWithRotation(Hit.GetComponent(), EName::NAME_None, Hit.GetActor()->GetActorLocation(), FRotator(0));		//Component to be grabbed is picked up
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Not an actor!"));
+		return;
+	}
+
+}
+
+void UGrabber::TRelease()
+{
+
+	GrabbedComponent = PhysicsHandle->GetGrabbedComponent();
+	if(!PhysicsHandle->GrabbedComponent)
+	{
+		return;
+	}
+	TReq.Broadcast();
+
 }
 
 
@@ -98,8 +133,10 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	POVSet();
-	if (!PhysicsHandle) { UE_LOG(LogTemp, Error, TEXT("PHYSICS HANDLE NOT FOUND FOR %s"), *GetOwner()->GetName());
-	return;
+	if (!PhysicsHandle) 
+	{
+		UE_LOG(LogTemp, Error, TEXT("PHYSICS HANDLE NOT FOUND FOR %s"), *GetOwner()->GetName());
+		return;
 	}
 	if (PhysicsHandle->GrabbedComponent)
 	{

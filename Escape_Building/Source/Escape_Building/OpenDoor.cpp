@@ -20,7 +20,8 @@ float UOpenDoor::GetTotalMass()
 	float Tmass = 0.f;
 	//Array of Objects that are going to trigger the pressure plate
 	TArray<AActor*> TrigObjs;
-	if (PressurePlate==nullptr) { UE_LOG(LogTemp, Error, TEXT("Pressure Plate NOT FOUND FOR %s"), *GetOwner()->GetName());
+	if (PressurePlate==nullptr) 
+	{ 
 	return Tmass;
 	}
 	PressurePlate->GetOverlappingActors(OUT TrigObjs);
@@ -42,13 +43,16 @@ void UOpenDoor::BeginPlay()
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (GetTotalMass()>Masstrigger)
+	if (PressurePlate != nullptr)
 	{
-		OpenDoorRequest.Broadcast();
-	}
-	else
-	{
-		CloseDoorRequest.Broadcast();
+		if (GetTotalMass() > Masstrigger)
+		{
+			OpenDoorRequest.Broadcast();
+		}
+		else
+		{
+			CloseDoorRequest.Broadcast();
+		}
 	}
 }
 

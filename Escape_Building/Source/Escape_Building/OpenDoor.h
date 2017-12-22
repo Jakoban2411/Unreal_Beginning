@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include"GameFramework/Actor.h"
 #include"Engine/TriggerVolume.h"
+#include"Runtime/Engine/Classes/Engine/StaticMeshActor.h"
+#include"Engine/TriggerBox.h"
 #include "OpenDoor.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOpenRequest);
@@ -19,9 +21,9 @@ public:
 	// Sets default values for this component's properties
 	UOpenDoor();
 	float GetTotalMass();
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable,BlueprintCallable)
 		FOpenRequest OpenDoorRequest;
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable,BlueprintCallable)
 		FCloseRequest CloseDoorRequest;
 
 protected:
@@ -36,5 +38,6 @@ private:
 		ATriggerVolume* PressurePlate=nullptr;
 	UPROPERTY(EditAnywhere)
 		float Masstrigger=70.f;
-	
+	UPROPERTY(EditAnywhere)
+		FString Answer="NULL";
 };
